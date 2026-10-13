@@ -1,0 +1,80 @@
+extends CharacterBody2D
+## Kontrol dasar pemain untuk platformer Pixel Quest: Royal Crystal.
+
+const BULLET_SCENE: PackedScene = preload("res://scenes/Bullet.tscn")
+
+signal take_damage(amount: int)
+signal collect_crystal(points: int, is_royal: bool)
+
+const SPEED: float = 180.0
+const JUMP_VELOCITY: float = -380.0
+const MOVE_ACCELERATION: float = 1200.0
+const MOVE_DECELERATION: float = 1500.0
+
+@onready var sprite: Sprite2D = get_node_or_null("Sprite2D") as Sprite2D
+@onready var color_visual: ColorRect = get_node_or_null("ColorRect") as ColorRect
+
+var gravity: float = float(ProjectSettings.get_setting("physics/2d/default_gravity"))
+var facing_direction: float = 1.0
+var shoot_cooldown: float = 0.0
+
+
+func _ready() -> void:
+	# Snap membantu karakter tetap menempel pada lereng kecil saat bergerak.
+	floor_snap_length = 8.0
+	floor_max_angle = deg_to_rad(46.0)
+	floor_stop_on_slope = true
+
+
+func _physics_process(delta: float) -> void:
+	shoot_cooldown = maxf(shoot_cooldown - delta, 0.0)
+	if _shoot_input_pressed() and shoot_cooldown <= 0.0:
+		_shoot()
+		shoot_cooldown = 0.18
+
+	if not is_on_floor():
+		velocity.y += gravity * delta
+
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+		GameManager.play_sfx(&"jump")
+
+	var direction: float = Input.get_axis("ui_left", "ui_right")
+	if not is_zero_approx(direction):
+		facing_direction = signf(direction)
+		velocity.x = move_toward(velocity.x, direction * SPEED, MOVE_ACCELERATION * delta)
+		if sprite != null:
+			sprite.flip_h = direction < 0.0
+		elif color_visual != null:
+			color_visual.scale.x = -1.0 if direction < 0.0 else 1.0
+	else:
+		velocity.x = move_toward(velocity.x, 0.0, MOVE_DECELERATION * delta)
+
+	move_and_slide()
+
+
+func _shoot_input_pressed() -> bool:
+	return (
+		Input.is_action_just_pressed("ui_select")
+		or Input.is_key_pressed(KEY_J)
+		or Input.is_mouse_button_just_pressed(MOUSE_BUTTON_LEFT)
+	)
+
+
+func _shoot() -> void:
+	var bullet := BULLET_SCENE.instantiate() as Area2D
+	bullet.set("direction", facing_direction)
+	get_tree().current_scene.add_child(bullet)
+	bullet.global_position = global_position + Vector2(22.0 * facing_direction, -4.0)
+	GameManager.play_sfx(&"shoot")
+
+
+## Panggil dari area bahaya atau sistem pertarungan.
+func receive_damage(amount: int = 10) -> void:
+	if amount > 0:
+		take_damage.emit(amount)
+
+
+## Panggil saat pemain menyentuh kristal; tandai kristal utama sebagai royal.
+func pickup_crystal(points: int = 1, is_royal: bool = false) -> void:
+	collect_crystal.emit(maxi(points, 0), is_royal)

@@ -1,0 +1,112 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/Enemy.tscn" id="2_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/Crystal.tscn" id="3_goal"]
+[ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="4_hud"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(1152, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_low_platform"]
+size = Vector2(220, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mid_platform"]
+size = Vector2(230, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_high_platform"]
+size = Vector2(260, 24)
+
+[node name="Level2" type="Node2D"]
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.34, 0.39, 0.48, 1)
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="DistantShadow" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.12, 0.12)
+
+[node name="NightSky" type="ColorRect" parent="ParallaxBackground/DistantShadow"]
+offset_left = -500.0
+offset_top = -500.0
+offset_right = 1700.0
+offset_bottom = 900.0
+color = Color(0.025, 0.035, 0.09, 1)
+
+[node name="FarRidge" type="Polygon2D" parent="ParallaxBackground/DistantShadow"]
+polygon = PackedVector2Array(-400, 440, -260, 340, -100, 430, 70, 315, 250, 430, 420, 350, 600, 430, 780, 300, 960, 420, 1140, 330, 1320, 430, 1510, 315, 1700, 420, 1700, 850, -400, 850)
+color = Color(0.055, 0.065, 0.14, 1)
+
+[node name="ShadowCanopy" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.4, 0.4)
+
+[node name="HillSilhouette" type="Polygon2D" parent="ParallaxBackground/ShadowCanopy"]
+polygon = PackedVector2Array(-400, 540, -250, 465, -90, 520, 80, 405, 255, 515, 430, 450, 610, 520, 785, 410, 965, 520, 1140, 440, 1320, 525, 1510, 420, 1700, 520, 1700, 850, -400, 850)
+color = Color(0.055, 0.12, 0.13, 1)
+
+[node name="TallPines" type="Polygon2D" parent="ParallaxBackground/ShadowCanopy"]
+polygon = PackedVector2Array(110, 530, 130, 530, 120, 155, 45, 255, 90, 245, 25, 335, 80, 320, 30, 400, 95, 380, 30, 465, 95, 445, 40, 530, 420, 520, 442, 520, 430, 115, 350, 220, 400, 205, 325, 305, 390, 285, 320, 385, 390, 365, 325, 465, 395, 445, 470, 520, 900, 530, 920, 530, 910, 170, 835, 265, 885, 250, 815, 345, 880, 325, 810, 420, 875, 400, 810, 500, 875, 480, 940, 530, 1380, 530, 1400, 530, 1390, 135, 1310, 235, 1360, 220, 1290, 315, 1355, 295, 1280, 395, 1345, 375, 1280, 475, 1345, 455, 1420, 530)
+color = Color(0.035, 0.09, 0.095, 1)
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(0, 580)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+position = Vector2(576, 0)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CliffFace" type="Polygon2D" parent="Ground"]
+position = Vector2(576, 0)
+polygon = PackedVector2Array(-576, -20, -450, -24, -320, -18, -190, -23, -60, -19, 70, -25, 200, -18, 330, -23, 460, -19, 576, -22, 576, 160, 430, 175, 280, 158, 130, 177, -20, 160, -170, 178, -320, 160, -460, 174, -576, 160)
+color = Color(0.095, 0.13, 0.12, 1)
+
+[node name="MossEdge" type="Polygon2D" parent="Ground"]
+position = Vector2(576, 0)
+polygon = PackedVector2Array(-576, -20, -450, -24, -320, -18, -190, -23, -60, -19, 70, -25, 200, -18, 330, -23, 460, -19, 576, -22, 576, -12, 460, -11, 330, -15, 200, -10, 70, -16, -60, -10, -190, -14, -320, -9, -450, -14, -576, -10)
+color = Color(0.18, 0.31, 0.22, 1)
+
+[node name="LowPlatform" type="StaticBody2D" parent="."]
+position = Vector2(220, 500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LowPlatform"]
+shape = SubResource("RectangleShape2D_low_platform")
+
+[node name="MossyStone" type="Polygon2D" parent="LowPlatform"]
+polygon = PackedVector2Array(-110, -12, -75, -15, -30, -11, 15, -14, 65, -10, 110, -13, 110, 12, -110, 12)
+color = Color(0.16, 0.24, 0.2, 1)
+
+[node name="MidPlatform" type="StaticBody2D" parent="."]
+position = Vector2(470, 430)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MidPlatform"]
+shape = SubResource("RectangleShape2D_mid_platform")
+
+[node name="MossyStone" type="Polygon2D" parent="MidPlatform"]
+polygon = PackedVector2Array(-115, -12, -70, -15, -20, -11, 35, -14, 75, -10, 115, -13, 115, 12, -115, 12)
+color = Color(0.15, 0.22, 0.2, 1)
+
+[node name="HighPlatform" type="StaticBody2D" parent="."]
+position = Vector2(820, 370)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HighPlatform"]
+shape = SubResource("RectangleShape2D_high_platform")
+
+[node name="MossyStone" type="Polygon2D" parent="HighPlatform"]
+polygon = PackedVector2Array(-130, -12, -85, -15, -35, -11, 20, -14, 80, -10, 130, -13, 130, 12, -130, 12)
+color = Color(0.15, 0.22, 0.2, 1)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(100, 400)
+
+[node name="Enemy" parent="." instance=ExtResource("2_enemy")]
+position = Vector2(620, 530)
+
+[node name="EnemyUpper" parent="." instance=ExtResource("2_enemy")]
+position = Vector2(520, 400)
+
+[node name="FinalCrystal" parent="." instance=ExtResource("3_goal")]
+position = Vector2(920, 330)
+is_royal = false
+
+[node name="HUD" parent="." instance=ExtResource("4_hud")]

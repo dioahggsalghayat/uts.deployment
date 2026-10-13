@@ -1,0 +1,4 @@
+res://scenes/Level1.tscn
+res://scripts/player.gd
+res://scripts/crystal.gd
+res://scripts/game_manager.gd
