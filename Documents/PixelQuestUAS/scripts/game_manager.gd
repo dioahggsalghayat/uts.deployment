@@ -116,6 +116,9 @@ func take_damage(amount: int = 10) -> void:
 		return
 
 	play_sfx(&"damage")
+	var player := get_tree().get_first_node_in_group("player")
+	if player != null and player.has_method("screen_shake"):
+		player.screen_shake(0.16, 4.0)
 	health = maxi(health - amount, 0)
 	health_changed.emit(health)
 	if health == 0:
@@ -123,6 +126,21 @@ func take_damage(amount: int = 10) -> void:
 		print("Game Over")
 		await get_tree().create_timer(1.5).timeout
 		reload_scene()
+
+
+func heal_player(amount: int) -> void:
+	if amount <= 0 or health <= 0:
+		return
+	health = mini(health + amount, MAX_HEALTH)
+	health_changed.emit(health)
+
+
+func victory() -> void:
+	if has_won:
+		return
+	has_won = true
+	game_won.emit()
+	get_tree().change_scene_to_file("res://scenes/VictoryScreen.tscn")
 
 
 func collect_crystal(points: int = 1, is_royal: bool = false) -> void:
